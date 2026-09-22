@@ -1,5 +1,5 @@
 
-// oh no i just realised that this mod arleady exists :sob:
+// oh no i just realised that this mod arleady exists :sob: (hopefully its for 2.207)
 
 #include "Geode/loader/Log.hpp"
 #include <Geode/Geode.hpp>
