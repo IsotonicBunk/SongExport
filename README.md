@@ -11,4 +11,4 @@ Adds song export button for saving custom song to any directory with single butt
 
 <strong>Currently not working with Jukebox NONG's and vanilla soundtrack</strong>
 
-Please, report any mod issues to the [Github repository](https://www.github.com/IsotonicBunk/SongExport)
+Please, report any mod issues to the [Github repository](https://github.com/IsotonicBunk/SongExport/issues)

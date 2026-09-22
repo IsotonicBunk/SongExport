@@ -10,16 +10,24 @@
 	"name": "Song Export",
 	"version": "v1.0.0",
 	"developer": "isotonicbunk",
-	"description": "Export custom GD song with single button ig idk",
-	"dependencies": {
-		"geode.node-ids": ">=v1.23.3"
+	"description": "Export custom GD song with a single button ig idk",
+	"links": {
+		"source": "https://www.github.com/IsotonicBunk/SongExport/"
 	},
+	"issues": {
+		"info": "You can report any mod issues on Hithub repository",
+		"url": "https://github.com/IsotonicBunk/SongExport/issues"
+	},
+	"tags": [
+		"music",
+		"utility"
+	],
 	"resources": {
 		"sprites": [
 			"resources/export-btn.png"
 		],
 		"files": [
-			"prevw.png"
+			"resources/prevw.png"
 		]
 	}
 }
