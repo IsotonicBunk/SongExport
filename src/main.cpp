@@ -73,7 +73,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		} 
 
 		auto exp_opts = file::FilePickOptions{
-			fname, 
+			fname_as_path, 
 			{{"Audio File", {"*.mp3", "*.m4a", "*.ogg", "*.opus", "*.oga", "*.flac", "*.wav", "*.aiff", "*.aif" }}}
 		};
 		
