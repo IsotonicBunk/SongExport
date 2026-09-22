@@ -84,7 +84,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 
 		async::spawn(
 			file::pick(file::PickMode::SaveFile, exp_opts),
-			[this, fname](file::PickResult fres){
+			[this, fname, fname_as_path](file::PickResult fres){
 				if (!fres.ok()) {
 					log::error("error with picker result - ", fres.err());
 					showErrPopup((fres.err()->c_str()));
@@ -100,7 +100,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 				log::info("Copied file from {} to {}", fname, path_str);
 
 				try {
-					std::filesystem::copy(fname, path_str);
+					std::filesystem::copy(fname_as_path, path_str);
 					log::info("Copied file from {} to {}", fname, path_str);
 				} catch (std::exception& e) {
 					log::error("error while copying - ", e.what());
