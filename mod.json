@@ -1,0 +1,25 @@
+{
+	"geode": "5.10.1",
+	"gd": {
+		"win": "2.2081",
+		"android": "2.2081",
+		"mac": "2.2081",
+		"ios": "2.2081"
+	},
+	"id": "isotonicbunk.song-export",
+	"name": "Song Export",
+	"version": "v1.0.0",
+	"developer": "isotonicbunk",
+	"description": "Export custom GD song with single button ig idk",
+	"dependencies": {
+		"geode.node-ids": ">=v1.23.3"
+	},
+	"resources": {
+		"sprites": [
+			"resources/export-btn.png"
+		],
+		"files": [
+			"prevw.png"
+		]
+	}
+}
