@@ -3,6 +3,7 @@
 
 #include "Geode/loader/Log.hpp"
 #include <Geode/Geode.hpp>
+#include <filesystem>
 
 using namespace geode::prelude;
 
@@ -64,7 +65,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		}
 
 		std::filesystem::path fname_as_path(fname);
-		std::string def_path = fname;
+		std::filesystem::path def_path = fname;
 
 		if (fname_as_path.has_extension() && m_songInfoObject && m_songInfoObject->m_songName!="") {
 			geode::log::info("song namne is {}" ,m_songInfoObject->m_songName);
