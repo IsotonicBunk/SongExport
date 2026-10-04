@@ -1,15 +1,20 @@
 
 // oh no i just realised that this mod arleady exists :sob: (hopefully its for 2.207)
 
-#include "Geode/loader/Log.hpp"
 #include <Geode/Geode.hpp>
-#include <filesystem>
-
 using namespace geode::prelude;
 
 #include <Geode/modify/CustomSongWidget.hpp>
 
 class $modify(SECustomSongWidget, CustomSongWidget) {
+	std::filesystem::path getSongPath(int sogId) {
+		std::filesystem::path path = dirs::getResourcesDir();
+		if (isThereASongFileExistsAtTsPathWithTsId(sogId, path)) return path / (std::to_string(sogId) + getSongFilenameExtensionViaIDAndPath(sogId, path));
+		
+		path = dirs::getSaveDir();
+		if (isThereASongFileExistsAtTsPathWithTsId(sogId, path)) return path / (std::to_string(sogId) + getSongFilenameExtensionViaIDAndPath(sogId, path));
+		return "";
+	}
 	void showErrPopup(const char * err) {
 		FLAlertLayer::create(
 			"Song Export",
@@ -17,8 +22,13 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 			"OK"
 		)->show();
 	}
-	std::string getSongFilenameExtensionViaID(int sogID) { // the shitcode
-		auto pathPrefix = (dirs::getResourcesDir() / (std::to_string(sogID)));
+
+	bool isThereASongFileExistsAtTsPathWithTsId(int sogId, std::filesystem::path path) {
+		if (getSongFilenameExtensionViaIDAndPath(sogId, path) == "") return false;
+		return true;
+	}
+	std::string getSongFilenameExtensionViaIDAndPath(int sogID, std::filesystem::path path) { // the shitcode
+		auto pathPrefix = path / std::to_string(sogID);
 		if (std::filesystem::exists(pathPrefix.string() + ".mp3")) {
 			return ".mp3";
 		} else if (std::filesystem::exists(pathPrefix.string() + ".ogg")) {
@@ -54,14 +64,13 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 			fname = m_songDelegate->getSongFileName();
 			log::info("Got Song filename from m_songDelegate, songID is {})", m_customSongID);
 		} 
-		else if (m_customSongID && std::filesystem::exists((dirs::getResourcesDir() / (std::to_string(m_customSongID) + getSongFilenameExtensionViaID(m_customSongID))))) {
-			fname = (dirs::getResourcesDir() / (std::to_string(m_customSongID) + getSongFilenameExtensionViaID(m_customSongID))).string();
+		else if (m_customSongID && std::filesystem::exists(getSongPath(m_customSongID))) {
+			fname = getSongPath(m_customSongID).string();
 			log::info("Got Song filename from res dir ({}), songID is {}", fname, m_customSongID);
 		} 
 		else {
 			log::error("Can't find song filename");
-			showErrPopup("Cannot find song file. fname=");
-log::error("expected file path is {}", (dirs::getResourcesDir() / (std::to_string(m_customSongID) + getSongFilenameExtensionViaID(m_customSongID))));
+			showErrPopup("Cannot find song file.");
 			return;
 		}
 
@@ -69,7 +78,7 @@ log::error("expected file path is {}", (dirs::getResourcesDir() / (std::to_strin
 		std::filesystem::path def_path = fname_as_path;
 
 		if (fname_as_path.has_extension() && m_songInfoObject && m_songInfoObject->m_songName!="") {
-			geode::log::info("song namne is {}" ,m_songInfoObject->m_songName);
+			geode::log::info("song name is {}" ,m_songInfoObject->m_songName);
 			def_path = safeName(m_songInfoObject->m_songName) + fname_as_path.extension().string();
 		} 
 
