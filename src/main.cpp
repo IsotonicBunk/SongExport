@@ -60,7 +60,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		} 
 		else {
 			log::error("Can't find song filename");
-			showErrPopup("Cannot find song file");
+			showErrPopup("Cannot find song file. fname="+fname);
 			return;
 		}
 
