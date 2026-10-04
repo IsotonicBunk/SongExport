@@ -61,7 +61,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		else {
 			log::error("Can't find song filename");
 			showErrPopup("Cannot find song file. fname=");
-log:error("expected file path is {}", fname);
+log::error("expected file path is {}", fname);
 			return;
 		}
 
