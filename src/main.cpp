@@ -70,7 +70,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		std::error_code err;
 		if (m_songDelegate && m_songDelegate->getSongFileName()!="") {
 			fname = m_songDelegate->getSongFileName();
-			log::info("Got Song filename from m_songDelegate, songID is {})", m_customSongID);
+			log::info("Got Song filename from m_songDelegate, songID is {}", m_customSongID);
 		} 
 		else if (m_customSongID && std::filesystem::exists(getSongPath(m_customSongID), err) && !err) {
 			fname = utils::string::pathToString(getSongPath(m_customSongID));
