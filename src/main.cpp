@@ -1,6 +1,7 @@
 
 // oh no i just realised that this mod arleady exists :sob: (hopefully its for 2.207)
 
+#include "Geode/utils/file.hpp"
 #include <Geode/Geode.hpp>
 using namespace geode::prelude;
 
@@ -96,28 +97,35 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 			file::pick(file::PickMode::SaveFile, exp_opts),
 			[this, fname, fname_as_path](file::PickResult fres){
 				if (!fres.ok()) {
-					log::error("error with picker result - ", fres.err());
+					log::error("error with picker result - {}", fres.err());
 					showErrPopup((fres.err()->c_str()));
 					return;
 				}
-				auto path = std::move(fres).unwrap();
-				if (!path) {
+				auto trg_path = std::move(fres).unwrap();
+				if (!trg_path) {
 					log::error("err - empty path");
 					showErrPopup("Empty path");
 					return;
 				}
-				auto path_str = std::move(path).value();
-				log::info("Copied file from {} to {}", fname, path_str);
+				auto trg_path_uw = std::move(trg_path).value(); 
+				//log::info("Copied file from {} to {}", fname, trg_path_str);
 
-				try {
-					std::filesystem::copy(fname_as_path, path_str);
-					log::info("Copied file from {} to {}", fname, path_str);
-				} catch (std::exception& e) {
-					log::error("error while copying - ", e.what());
-					showErrPopup(e.what());
+				auto fdata = utils::file::readBinary(fname_as_path);
+				if (fdata.isErr()) {
+					log::error("error while reading - {}", fdata.unwrapErr());
+					showErrPopup(fdata.unwrapErr().c_str());
 					return;
 				}
-
+				
+				auto write_res = file::writeBinarySafe(trg_path_uw, std::move(fdata).unwrap());
+				if (write_res.isErr()) {
+					log::error("error while writing - {}", write_res.unwrapErr());
+					showErrPopup(write_res.unwrapErr().c_str());
+					return;
+				}
+				log::info("Copied file from {} to {}", fname, trg_path_uw);
+				
+				log::debug("here before flalertlayer");
 				FLAlertLayer::create(
 					"Song Export",
 					"Song Was Exported!",
