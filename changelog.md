@@ -1,3 +1,6 @@
+# 1.0.2
+- Fixed overlapping with CopySongId's button.
+
 # 1.0.1
 - More "stable" code, *ig*
 - Probably fixed MacOS can't find the song path

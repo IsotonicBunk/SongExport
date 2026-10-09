@@ -153,14 +153,17 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		auto expBtn = CCMenuItemSpriteExtra::create(expBtnSpr, this, menu_selector(SECustomSongWidget::exportSong));
 
 		expBtn->setID("song-export-btn");
+		bool hasCopySogIdBtn = false;
+		if (m_buttonMenu && m_buttonMenu->getChildByID("raydeeux.copysongid/copy-song-id")) hasCopySogIdBtn = true;
 		if (unk==1){ // if in "audio assets" menu (in "compact mode") ig
 			expMenu->setContentSize(ccp(320, 50)); // smol
-		} else if (m_buttonMenu && m_buttonMenu->getChildByID("raydeeux.copysongid/copy-song-id")) {
-			expMenu->setContentSize(ccp(300, 35)); // big + holy copySongIdSupport
+		} else if (hasCopySogIdBtn) {
+			expMenu->setContentSize(ccp(300, 35)); // big, a little lower
 		} else {
 			expMenu->setContentSize(ccp(300, 90)); // big
 		}
-		expMenu->addChildAtPosition(expBtn, Anchor::TopRight);
+		if (!hasCopySogIdBtn) expMenu->addChildAtPosition(expBtn, Anchor::TopRight);
+		else expMenu->addChildAtPosition(expBtn, Anchor::BottomRight);
 
 		this->addChildAtPosition(expMenu, Anchor::Center);
 
