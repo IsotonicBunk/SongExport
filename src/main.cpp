@@ -162,7 +162,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		} else {
 			expMenu->setContentSize(ccp(300, 90)); // big
 		}
-		if (!hasCopySogIdBtn) expMenu->addChildAtPosition(expBtn, Anchor::TopRight);
+		if (!hasCopySogIdBtn || unk!=1) expMenu->addChildAtPosition(expBtn, Anchor::TopRight);
 		else expMenu->addChildAtPosition(expBtn, Anchor::BottomRight);
 
 		this->addChildAtPosition(expMenu, Anchor::Center);
