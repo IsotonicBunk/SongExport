@@ -1,7 +1,6 @@
 
 // oh no i just realised that this mod arleady exists :sob: (hopefully its for 2.207)
 
-#include "Geode/utils/file.hpp"
 #include <Geode/Geode.hpp>
 using namespace geode::prelude;
 
@@ -19,7 +18,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 	void showErrPopup(const char * err) {
 		FLAlertLayer::create(
 			"Song Export",
-			"An error occured while exporting a song: " + fmt::to_string(err),
+			"An error occured while exporting a song: " + std::string(err),
 			"OK"
 		)->show();
 	}
@@ -108,10 +107,9 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 					return;
 				}
 				auto trg_path_uw = std::move(trg_path).value(); 
-				//log::info("Copied file from {} to {}", fname, trg_path_str);
 
-				auto fdata = utils::file::readBinary(fname_as_path);
-				if (fdata.isErr()) {
+				auto fdata = file::readBinary(fname_as_path); // was using filesystem::copy earlier, 
+				if (fdata.isErr()) {                                                          // until i realize that it not works on android for some reason
 					log::error("error while reading - {}", fdata.unwrapErr());
 					showErrPopup(fdata.unwrapErr().c_str());
 					return;
@@ -125,7 +123,6 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 				}
 				log::info("Copied file from {} to {}", fname, trg_path_uw);
 				
-				log::debug("here before flalertlayer");
 				FLAlertLayer::create(
 					"Song Export",
 					"Song Was Exported!",
@@ -143,7 +140,8 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		expMenu->setID("song-export-menu"_spr);
 		//log::info("unk bool ={}; unkINT={}", unkBool, unk);
 
-		auto expBtnSpr = CCSprite::create("export-btn.png"_spr);
+		//auto expBtnSpr = CCSprite::create("export-btn.png"_spr);
+		auto expBtnSpr = CircleButtonSprite::createWithSpriteFrameName("GJ_downloadsIcon_001.png", 0.8, geode::CircleBaseColor::Blue, geode::CircleBaseSize::Tiny);
 		auto expBtn = CCMenuItemSpriteExtra::create(expBtnSpr, this, menu_selector(SECustomSongWidget::exportSong));
 
 		expBtn->setID("song-export-btn");

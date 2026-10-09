@@ -12,10 +12,10 @@
 	"developer": "isotonicbunk",
 	"description": "Export custom GD song with a single button ig idk",
 	"links": {
-		"source": "https://www.github.com/IsotonicBunk/SongExport/"
+		"source": "https://www.github.com/IsotonicBunk/SongExport"
 	},
 	"issues": {
-		"info": "You can report any mod issues on Hithub repository",
+		"info": "You can report any mod issues on Github repository",
 		"url": "https://github.com/IsotonicBunk/SongExport/issues"
 	},
 	"tags": [
@@ -23,9 +23,6 @@
 		"utility"
 	],
 	"resources": {
-		"sprites": [
-			"resources/export-btn.png"
-		],
 		"files": [
 			"resources/prevw.png"
 		]
