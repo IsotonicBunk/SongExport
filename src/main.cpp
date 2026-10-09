@@ -13,6 +13,13 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		
 		path = dirs::getSaveDir();
 		if (isThereASongFileExistsAtTsPathWithTsId(sogId, path)) return path / (std::to_string(sogId) + getSongFilenameExtensionViaIDAndPath(sogId, path));
+
+		auto home_str = std::getenv("HOME"); // this probably should be the home dir on macos
+		if (!home_str) return "";
+
+		std::filesystem::path home_pth = std::move(home_str);
+		path = home_pth / "Library" / "Caches"; // dont sure if it will work
+		if (isThereASongFileExistsAtTsPathWithTsId(sogId, path)) return path / (std::to_string(sogId) + getSongFilenameExtensionViaIDAndPath(sogId, path));
 		return "";
 	}
 	void showErrPopup(const char * err) {
@@ -28,24 +35,25 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		return true;
 	}
 	std::string getSongFilenameExtensionViaIDAndPath(int sogID, std::filesystem::path path) { // the shitcode
-		auto pathPrefix = path / std::to_string(sogID);
-		if (std::filesystem::exists(pathPrefix.string() + ".mp3")) {
+		auto pathPrefix = utils::string::pathToString(path / std::to_string(sogID));
+		std::error_code err;
+		if (std::filesystem::exists(pathPrefix + ".mp3", err) && !err) {
 			return ".mp3";
-		} else if (std::filesystem::exists(pathPrefix.string() + ".ogg")) {
+		} else if (std::filesystem::exists(pathPrefix + ".ogg", err) && !err) {
 			return ".ogg";
-		} else if (std::filesystem::exists(pathPrefix.string() + ".m4a")) {
+		} else if (std::filesystem::exists(pathPrefix + ".m4a", err) && !err) {
 			return ".m4a";
-		} else if (std::filesystem::exists(pathPrefix.string() + ".opus")) {
+		} else if (std::filesystem::exists(pathPrefix + ".opus", err) && !err) {
 			return ".opus";
-		} else if (std::filesystem::exists(pathPrefix.string() + ".oga")) {
+		} else if (std::filesystem::exists(pathPrefix + ".oga", err) && !err) {
 			return ".oga";
-		} else if (std::filesystem::exists(pathPrefix.string() + ".flac")) {
+		} else if (std::filesystem::exists(pathPrefix + ".flac", err) && !err) {
 			return ".flac";
-		} else if (std::filesystem::exists(pathPrefix.string() + ".wav")) {
+		} else if (std::filesystem::exists(pathPrefix + ".wav", err) && !err) {
 			return ".wav";
-		} else if (std::filesystem::exists(pathPrefix.string() + ".aiff")) {
+		} else if (std::filesystem::exists(pathPrefix + ".aiff", err) && !err) {
 			return ".aiff";
-		} else if (std::filesystem::exists(pathPrefix.string() + ".aif")) {
+		} else if (std::filesystem::exists(pathPrefix + ".aif", err) && !err) {
 			return ".aif";
 		} else return "";
 	}
@@ -59,13 +67,13 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 	void exportSong(CCObject* sender) {
 
 		gd::string fname = "";
-
+		std::error_code err;
 		if (m_songDelegate && m_songDelegate->getSongFileName()!="") {
 			fname = m_songDelegate->getSongFileName();
 			log::info("Got Song filename from m_songDelegate, songID is {})", m_customSongID);
 		} 
-		else if (m_customSongID && std::filesystem::exists(getSongPath(m_customSongID))) {
-			fname = getSongPath(m_customSongID).string();
+		else if (m_customSongID && std::filesystem::exists(getSongPath(m_customSongID), err) && !err) {
+			fname = utils::string::pathToString(getSongPath(m_customSongID));
 			log::info("Got Song filename from res dir ({}), songID is {}", fname, m_customSongID);
 		} 
 		else {
@@ -79,7 +87,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 
 		if (fname_as_path.has_extension() && m_songInfoObject && m_songInfoObject->m_songName!="") {
 			geode::log::info("song name is {}" ,m_songInfoObject->m_songName);
-			def_path = safeName(m_songInfoObject->m_songName) + fname_as_path.extension().string();
+			def_path = safeName(m_songInfoObject->m_songName) + utils::string::pathToString(fname_as_path.extension());
 		} 
 
 		auto exp_opts = file::FilePickOptions{
@@ -109,7 +117,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 				auto trg_path_uw = std::move(trg_path).value(); 
 
 				auto fdata = file::readBinary(fname_as_path); // was using filesystem::copy earlier, 
-				if (fdata.isErr()) {                                                          // until i realize that it not works on android for some reason
+				if (fdata.isErr()) {                                                    // until i realized that it crashes on android for some reason
 					log::error("error while reading - {}", fdata.unwrapErr());
 					showErrPopup(fdata.unwrapErr().c_str());
 					return;
