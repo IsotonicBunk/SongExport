@@ -7,21 +7,7 @@ using namespace geode::prelude;
 #include <Geode/modify/CustomSongWidget.hpp>
 
 class $modify(SECustomSongWidget, CustomSongWidget) {
-	std::filesystem::path getSongPath(int sogId) {
-		std::filesystem::path path = dirs::getResourcesDir();
-		if (isThereASongFileExistsAtTsPathWithTsId(sogId, path)) return path / (std::to_string(sogId) + getSongFilenameExtensionViaIDAndPath(sogId, path));
-		
-		path = dirs::getSaveDir();
-		if (isThereASongFileExistsAtTsPathWithTsId(sogId, path)) return path / (std::to_string(sogId) + getSongFilenameExtensionViaIDAndPath(sogId, path));
-
-		auto home_str = std::getenv("HOME"); // this probably should be the home dir on macos
-		if (!home_str) return "";
-
-		std::filesystem::path home_pth = std::move(home_str);
-		path = home_pth / "Library" / "Caches"; // dont sure if it will work
-		if (isThereASongFileExistsAtTsPathWithTsId(sogId, path)) return path / (std::to_string(sogId) + getSongFilenameExtensionViaIDAndPath(sogId, path));
-		return "";
-	}
+	
 	void showErrPopup(const char * err) {
 		FLAlertLayer::create(
 			"Song Export",
@@ -30,33 +16,6 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		)->show();
 	}
 
-	bool isThereASongFileExistsAtTsPathWithTsId(int sogId, std::filesystem::path path) {
-		if (getSongFilenameExtensionViaIDAndPath(sogId, path) == "") return false;
-		return true;
-	}
-	std::string getSongFilenameExtensionViaIDAndPath(int sogID, std::filesystem::path path) { // the shitcode
-		auto pathPrefix = utils::string::pathToString(path / std::to_string(sogID));
-		std::error_code err;
-		if (std::filesystem::exists(pathPrefix + ".mp3", err) && !err) {
-			return ".mp3";
-		} else if (std::filesystem::exists(pathPrefix + ".ogg", err) && !err) {
-			return ".ogg";
-		} else if (std::filesystem::exists(pathPrefix + ".m4a", err) && !err) {
-			return ".m4a";
-		} else if (std::filesystem::exists(pathPrefix + ".opus", err) && !err) {
-			return ".opus";
-		} else if (std::filesystem::exists(pathPrefix + ".oga", err) && !err) {
-			return ".oga";
-		} else if (std::filesystem::exists(pathPrefix + ".flac", err) && !err) {
-			return ".flac";
-		} else if (std::filesystem::exists(pathPrefix + ".wav", err) && !err) {
-			return ".wav";
-		} else if (std::filesystem::exists(pathPrefix + ".aiff", err) && !err) {
-			return ".aiff";
-		} else if (std::filesystem::exists(pathPrefix + ".aif", err) && !err) {
-			return ".aif";
-		} else return "";
-	}
 	std::string safeName(std::string sogName) {
 		for (char& c : sogName) {
 			std::string bad = "\\/:*?\"<>|";
@@ -65,15 +24,15 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		return sogName;
 	};
 	void exportSong(CCObject* sender) {
-
-		gd::string fname = "";
+		return;
+		std::string fname = "";
 		std::error_code err;
 		if (m_songDelegate && m_songDelegate->getSongFileName()!="") {
 			fname = m_songDelegate->getSongFileName();
 			log::info("Got Song filename from m_songDelegate, songID is {}", m_customSongID);
 		} 
-		else if (m_customSongID && std::filesystem::exists(getSongPath(m_customSongID), err) && !err) {
-			fname = utils::string::pathToString(getSongPath(m_customSongID));
+		else if (m_customSongID && std::filesystem::exists(MusicDownloadManager::sharedState()->pathForSong(m_customSongID), err) && !err) {
+			fname = MusicDownloadManager::sharedState()->pathForSong(m_customSongID);
 			log::info("Got Song filename from res dir ({}), songID is {}", fname, m_customSongID);
 		} 
 		else {
@@ -82,12 +41,12 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 			return;
 		}
 
-		std::filesystem::path fname_as_path(fname);
-		std::filesystem::path def_path = fname_as_path;
+		asp::fs::Path fname_as_path(fname);
+		asp::fs::Path def_path = fname_as_path;
 
-		if (fname_as_path.has_extension() && m_songInfoObject && m_songInfoObject->m_songName!="") {
+		if (fname_as_path.hasExtension() && m_songInfoObject && m_songInfoObject->m_songName!="") {
 			geode::log::info("song name is {}" ,m_songInfoObject->m_songName);
-			def_path = safeName(m_songInfoObject->m_songName) + utils::string::pathToString(fname_as_path.extension());
+			def_path = safeName(m_songInfoObject->m_songName) + std::string(fname_as_path.extension().value());
 		} 
 
 		auto exp_opts = file::FilePickOptions{
@@ -115,20 +74,13 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 					return;
 				}
 				auto trg_path_uw = std::move(trg_path).value(); 
-
-				auto fdata = file::readBinary(fname_as_path); // was using filesystem::copy earlier, 
-				if (fdata.isErr()) {                                                    // until i realized that it crashes on android for some reason
-					log::error("error while reading - {}", fdata.unwrapErr());
-					showErrPopup(fdata.unwrapErr().c_str());
+				auto write_res = asp::fs::copy(fname_as_path, trg_path_uw);
+				if (write_res.isErr()) {
+					log::error("error while copying - {}", write_res.unwrapErr());
+					showErrPopup(std::string(write_res.unwrapErr()).c_str());
 					return;
 				}
 				
-				auto write_res = file::writeBinarySafe(trg_path_uw, std::move(fdata).unwrap());
-				if (write_res.isErr()) {
-					log::error("error while writing - {}", write_res.unwrapErr());
-					showErrPopup(write_res.unwrapErr().c_str());
-					return;
-				}
 				log::info("Copied file from {} to {}", fname, trg_path_uw);
 				
 				FLAlertLayer::create(
@@ -141,8 +93,10 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		);
 	}
 
-	bool init(SongInfoObject* songInfo, CustomSongDelegate* songDelegate, bool showSongSelect, bool showPlayMusic, bool showDownload, bool isRobtopSong, bool unkBool, bool isMusicLibrary, int unk) {
-		if (!CustomSongWidget::init(songInfo, songDelegate, showSongSelect, showPlayMusic, showDownload, isRobtopSong, unkBool, isMusicLibrary, unk)) return false;
+	
+
+	bool init(SongInfoObject* songInfo, CustomSongDelegate* songDelegate, bool showSongSelect, bool showPlayMusic, bool showDownload, bool isRobtopSong, bool unkBool, bool isMusicLibrary, int unk, bool p9, bool p10) {
+		if (!CustomSongWidget::init(songInfo, songDelegate, showSongSelect, showPlayMusic, showDownload, isRobtopSong, unkBool, isMusicLibrary, unk, p9, p10)) return false;
 
 		CCMenu* expMenu = CCMenu::create();
 		expMenu->setID("song-export-menu"_spr);
@@ -170,5 +124,6 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		return true;
 	}
 };
+
 
 // the the end
