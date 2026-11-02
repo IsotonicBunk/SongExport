@@ -2,6 +2,7 @@
 // oh no i just realised that this mod arleady exists :sob: (hopefully its for 2.207)
 
 #include <Geode/Geode.hpp>
+#include <asp/fs/fs.hpp>
 using namespace geode::prelude;
 
 #include <Geode/modify/CustomSongWidget.hpp>
