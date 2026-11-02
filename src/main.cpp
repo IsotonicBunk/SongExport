@@ -25,7 +25,6 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		return sogName;
 	};
 	void exportSong(CCObject* sender) {
-		return;
 		std::string fname = "";
 		std::error_code err;
 		if (m_songDelegate && m_songDelegate->getSongFileName()!="") {
