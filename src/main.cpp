@@ -46,7 +46,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 
 		if (fname_as_path.hasExtension() && m_songInfoObject && m_songInfoObject->m_songName!="") {
 			geode::log::info("song name is {}" ,m_songInfoObject->m_songName);
-			def_path = safeName(m_songInfoObject->m_songName) + std::string(fname_as_path.extension().value());
+			def_path = fmt::format("{}.{}", safeName(m_songInfoObject->m_songName), fname_as_path.extension().value());
 		} 
 
 		auto exp_opts = file::FilePickOptions{
