@@ -109,7 +109,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		expBtn->setID("song-export-btn");
 		bool hasCopySogIdBtn = false;
 		if (m_buttonMenu && m_buttonMenu->getChildByID("raydeeux.copysongid/copy-song-id")) hasCopySogIdBtn = true;
-		if (unk==1){ // if in "audio assets" menu (in "compact mode") ig
+		if (unk==1 || isMusicLibrary){ // if in "audio assets" menu (in "compact mode") ig
 			expMenu->setContentSize(ccp(320, 50)); // smol
 		} else if (hasCopySogIdBtn) {
 			expMenu->setContentSize(ccp(300, 35)); // big, a little lower
