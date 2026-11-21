@@ -1,3 +1,7 @@
+# 1.1.0
+- Ported to Geometry Dash 2.2091
+- Fixed displaying the button in music library
+
 # 1.0.2
 - Fixed overlapping with CopySongId's button.
 
