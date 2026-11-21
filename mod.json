@@ -1,5 +1,5 @@
 {
-	"geode": "6.0.0-alpha.1",
+	"geode": "6.0.0-beta.1",
 	"gd": {
 		"win": "2.2091",
 		"android": "2.2091",
@@ -8,7 +8,7 @@
 	},
 	"id": "isotonicbunk.song-export",
 	"name": "Song Export",
-	"version": "v1.0.2",
+	"version": "v1.1.0",
 	"developer": "isotonicbunk",
 	"description": "Export custom GD song with a single button ig idk",
 	"links": {
