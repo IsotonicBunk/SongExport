@@ -33,7 +33,7 @@ class $modify(SECustomSongWidget, CustomSongWidget) {
 		} 
 		else if (m_customSongID && std::filesystem::exists(MusicDownloadManager::sharedState()->pathForSong(m_customSongID), err) && !err) {
 			fname = MusicDownloadManager::sharedState()->pathForSong(m_customSongID);
-			log::info("Got Song filename from res dir ({}), songID is {}", fname, m_customSongID);
+			log::info("Got Song filename from pathForSong ({}), songID is {}", fname, m_customSongID);
 		} 
 		else {
 			log::error("Can't find song filename");
